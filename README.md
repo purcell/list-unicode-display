@@ -1,5 +1,5 @@
-[![Melpa Status](http://melpa.org/packages/list-unicode-display.svg)](http://melpa.org/#/list-unicode-display)
-[![Melpa Stable Status](http://stable.melpa.org/packages/list-unicode-display-badge.svg)](http://stable.melpa.org/#/list-unicode-display)
+[![Melpa Status](https://melpa.org/packages/list-unicode-display-badge.svg)](https://melpa.org/#/list-unicode-display)
+[![Melpa Stable Status](https://stable.melpa.org/packages/list-unicode-display-badge.svg)](https://stable.melpa.org/#/list-unicode-display)
 
 list-unicode-display
 ====================
