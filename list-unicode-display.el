@@ -4,7 +4,8 @@
 
 ;; Author: Steve Purcell <steve@sanityinc.com>
 ;; Keywords: convenience
-;; Package-Version: 1
+;; Package-Version: 0
+;; Package-Requires: ((emacs "24.3"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -26,12 +27,15 @@
 
 ;;; Code:
 
+(defgroup list-unicode-display nil
+  "Explore unicode characters."
+  :group 'i18n)
+
 (define-derived-mode list-unicode-display-mode help-mode "Unicode Characters"
-  "Major mode to display a list of unicode characters."
-  )
+  "Major mode to display a list of unicode characters.")
 
 (defun list-unicode-display-describe ()
-  "Do `describe-char' to the character in a row of a `list-unicode-display-mode' buffer."
+  "Apply `describe-char' to the character in a row of a `list-unicode-display-mode' buffer."
   (interactive)
   (save-excursion
     (beginning-of-line)
@@ -39,7 +43,7 @@
     (describe-char (point))))
 
 (defun list-unicode-display-copy ()
-  "Copy the character in a row of a `list-unicode-display-mode' buffer to the kill-ring."
+  "Copy the character in a row of a `list-unicode-display-mode' buffer to the kill ring."
   (interactive)
   (save-excursion
     (beginning-of-line)
@@ -61,7 +65,7 @@ some time."
   (let* ((regexp (or regexp ".*"))
          (case-fold-search t)
          (cmp (lambda (x y) (< (cdr x) (cdr y))))
-         (pred (lambda (name) (string-match regexp name)))
+         (pred (lambda (name) (string-match-p regexp name)))
          ;; alist like ("name" . code-point)
          (char-alist ()))
 
@@ -79,15 +83,15 @@ some time."
     (setq char-alist (sort char-alist cmp))
 
     (with-current-buffer (get-buffer-create "*Unicode Characters*")
-      (read-only-mode -1)
-      (erase-buffer)
-      (dolist (c char-alist)
-        (insert (format "0x%06X\t" (cdr c)))
-        (insert (char-to-string (cdr c)))
-        (insert (format "\t%s\n" (car c))))
-      (list-unicode-display-mode)
-      (goto-char (point-min))
-      (switch-to-buffer (current-buffer)))))
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (dolist (c char-alist)
+          (insert (format "0x%06X\t" (cdr c)))
+          (insert (char-to-string (cdr c)))
+          (insert (format "\t%s\n" (car c))))
+        (list-unicode-display-mode)
+        (goto-char (point-min))
+        (switch-to-buffer (current-buffer))))))
 
 (provide 'list-unicode-display)
 ;;; list-unicode-display.el ends here
