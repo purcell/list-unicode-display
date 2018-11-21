@@ -69,16 +69,17 @@ some time."
          ;; alist like ("name" . code-point)
          (char-alist ()))
 
-    (if (>= emacs-major-version 26)
-        ;; ucs-names returns a hash table in emacs 26+
-        (maphash (lambda (name char)
-                   (when (funcall pred name)
-                     (push (cons name char) char-alist)))
-                 (ucs-names))
-      (mapc (lambda (pair)
-              (when (funcall pred (car pair))
-                (push pair char-alist)))
-            (ucs-names)))
+    (let ((names (ucs-names)))
+      (if (hash-table-p names)
+          ;; ucs-names returns a hash table in emacs 26+
+          (maphash (lambda (name char)
+                     (when (funcall pred name)
+                       (push (cons name char) char-alist)))
+                   names)
+        (mapc (lambda (pair)
+                (when (funcall pred (car pair))
+                  (push pair char-alist)))
+              names)))
 
     (setq char-alist (sort char-alist cmp))
 
