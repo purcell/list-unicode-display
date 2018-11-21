@@ -4,8 +4,7 @@
 
 ;; Author: Steve Purcell <steve@sanityinc.com>
 ;; Keywords: convenience
-;; Package-Version: 0
-;; Package-Requires: ((cl-lib "0.5"))
+;; Package-Version: 1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,7 +26,31 @@
 
 ;;; Code:
 
-(require 'cl-lib)
+(define-derived-mode list-unicode-display-mode help-mode "Unicode Characters"
+  "Major mode to display a list of unicode characters."
+  )
+
+(defun list-unicode-display-describe ()
+  "Do `describe-char' to the character in a row of a `list-unicode-display-mode' buffer."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (search-forward "\t" (line-end-position))
+    (describe-char (point))))
+
+(defun list-unicode-display-copy ()
+  "Copy the character in a row of a `list-unicode-display-mode' buffer to the kill-ring."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (search-forward "\t" (line-end-position))
+    (kill-ring-save (point) (1+ (point)))
+    (message "Saved `%s' to the kill-ring."
+             (buffer-substring-no-properties (point) (1+ (point))))))
+
+(define-key list-unicode-display-mode-map (kbd "RET") #'list-unicode-display-describe)
+(define-key list-unicode-display-mode-map (kbd "w") #'list-unicode-display-copy)
+(define-key list-unicode-display-mode-map (kbd "g") #'list-unicode-display)
 
 ;;;###autoload
 (defun list-unicode-display (&optional regexp)
@@ -38,16 +61,33 @@ some time."
   (let* ((regexp (or regexp ".*"))
          (case-fold-search t)
          (cmp (lambda (x y) (< (cdr x) (cdr y))))
+         (pred (lambda (name) (string-match regexp name)))
          ;; alist like ("name" . code-point)
-         (char-alist (sort (cl-remove-if-not (lambda (x) (string-match regexp (car x)))
-                                             (ucs-names))
-                           cmp)))
-    (with-help-window "*Unicode characters*"
-      (with-current-buffer standard-output
-        (dolist (c char-alist)
-          (insert (format "0x%06X\t" (cdr c)))
-          (insert (cdr c))
-          (insert (format "\t%s\n" (car c))))))))
+         (char-alist ()))
+
+    (if (>= emacs-major-version 26)
+        ;; ucs-names returns a hash table in emacs 26+
+        (maphash (lambda (name char)
+                   (when (funcall pred name)
+                     (push (cons name char) char-alist)))
+                 (ucs-names))
+      (mapc (lambda (pair)
+              (when (funcall pred (car pair))
+                (push pair char-alist)))
+            (ucs-names)))
+
+    (setq char-alist (sort char-alist cmp))
+
+    (with-current-buffer (get-buffer-create "*Unicode Characters*")
+      (read-only-mode -1)
+      (erase-buffer)
+      (dolist (c char-alist)
+        (insert (format "0x%06X\t" (cdr c)))
+        (insert (char-to-string (cdr c)))
+        (insert (format "\t%s\n" (car c))))
+      (list-unicode-display-mode)
+      (goto-char (point-min))
+      (switch-to-buffer (current-buffer)))))
 
 (provide 'list-unicode-display)
 ;;; list-unicode-display.el ends here
