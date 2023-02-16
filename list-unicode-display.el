@@ -83,16 +83,18 @@ some time."
 
     (setq char-alist (sort char-alist cmp))
 
-    (with-current-buffer (get-buffer-create "*Unicode Characters*")
-      (let ((inhibit-read-only t))
-        (erase-buffer)
-        (dolist (c char-alist)
-          (insert (format "0x%06X\t" (cdr c)))
-          (insert (char-to-string (cdr c)))
-          (insert (format "\t%s\n" (car c))))
-        (list-unicode-display-mode)
-        (goto-char (point-min))
-        (switch-to-buffer (current-buffer))))))
+    (let ((buf (get-buffer-create "*Unicode Characters*"))
+          (display-buffer-base-action '(display-buffer-same-window . nil)))
+      (with-current-buffer buf
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (dolist (c char-alist)
+            (insert (format "0x%06X\t" (cdr c)))
+            (insert (char-to-string (cdr c)))
+            (insert (format "\t%s\n" (car c))))
+          (list-unicode-display-mode)
+          (goto-char (point-min))))
+      (display-buffer buf))))
 
 (provide 'list-unicode-display)
 ;;; list-unicode-display.el ends here
