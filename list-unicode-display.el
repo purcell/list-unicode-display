@@ -4,6 +4,7 @@
 
 ;; Author: Steve Purcell <steve@sanityinc.com>
 ;; Keywords: convenience
+;; Homepage: https://github.com/purcell/list-unicode-display
 ;; Package-Version: 0
 ;; Package-Requires: ((emacs "24.3"))
 
