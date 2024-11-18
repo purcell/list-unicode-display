@@ -23,6 +23,10 @@ Otherwise:
 
 <hr>
 
+Alternatively, `list-unicode-display-find-copy` may be used to search
+interactively for a character via `completing-read` and copy it straight
+to the kill ring.
+
 
 [💝 Support this project and my other Open Source work](https://www.patreon.com/sanityinc)
 
