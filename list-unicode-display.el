@@ -97,5 +97,15 @@ some time."
           (goto-char (point-min))))
       (display-buffer buf))))
 
+
+;;;###autoload
+(defun list-unicode-display-find-copy ()
+  "Copy a prompted character to the kill ring.
+
+Also see `insert-char', which is similar to this command, but inserts the
+character instead."
+  (interactive)
+  (kill-new (char-to-string (read-char-by-name "Copy char: "))))
+
 (provide 'list-unicode-display)
 ;;; list-unicode-display.el ends here

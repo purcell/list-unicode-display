@@ -22,6 +22,9 @@ Otherwise:
 
     M-x list-unicode-display
 
+Alternatively, `list-unicode-display-find-copy` may be used to search
+interactively for a character and copy it to the kill ring.
+
 <hr>
 
 
